@@ -32,7 +32,44 @@ app.add_middleware(
 
 @app.get("/")
 def default_route():
+
     return "ok"
+
+
+
+
+
+from pydantic import BaseModel
+from service.execute import run_code
+
+
+class RunCodeRequest(BaseModel):
+    code: str
+    stdin: str = ""
+    language: str = "python"
+
+
+
+@app.post("/run_code")
+def run_code_route(payload: RunCodeRequest):
+    try:
+        result = run_code(
+            code=payload.code,
+            input_data=payload.stdin,
+            language=payload.language
+        )
+
+        return {
+            "output": result.get("output") or result.get("stdout") or "",
+            "error": result.get("stderr") or result.get("compile_output") or ""
+        }
+
+    except Exception as e:
+        return {
+            "output": "",
+            "error": str(e)
+        }
+    
 
 app.include_router(user_router)
 app.include_router(questions_router)
