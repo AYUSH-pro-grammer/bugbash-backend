@@ -1,4 +1,6 @@
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr, constr, Field
+
+
 
 class UserCreate(BaseModel):
 
@@ -9,9 +11,11 @@ class UserCreate(BaseModel):
     password: constr(min_length=8, max_length=72)
 
 
+
 class UserLogin(BaseModel):
-    email: EmailStr 
-    password: constr(min_length=8, max_length=72) 
+    email: str
+    password: str = Field(min_length=8, max_length=72)
+
 
 
 
