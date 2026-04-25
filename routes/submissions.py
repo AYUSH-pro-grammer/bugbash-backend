@@ -9,13 +9,36 @@ from service.execute import run_code
 router = APIRouter(tags=["submissions"])
 
 
+
+from deps.auth import get_current_user
+from models.model import Submission, TestCase, SubmissionResult, LatestSubmission
+
+
 @router.post("/submit")
-def submit_code(data: SubmissionCreate, db: Session = Depends(get_db)):
+def submit_code(
+    data: SubmissionCreate,
+    user_id: int = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     testcases = db.query(TestCase).filter(TestCase.question_id == data.question_id).all()
 
     passed = 0
     total = len(testcases)
     results = []
+
+    submission = Submission(
+        user_id=user_id,
+        question_id=data.question_id,
+        code=data.code,
+        language=data.language,
+        status="Pending",
+        total_passed=0,
+        total_cases=total,
+    )
+
+    db.add(submission)
+    db.commit()
+    db.refresh(submission)
 
     for tc in testcases:
         result = run_code(data.code, tc.input, data.language)
@@ -28,6 +51,18 @@ def submit_code(data: SubmissionCreate, db: Session = Depends(get_db)):
         if ok:
             passed += 1
 
+        res_obj = SubmissionResult(
+            submission_id=submission.id,
+            test_case_id=tc.id,
+            status="Accepted" if ok else "Wrong Answer",
+            output=output,
+            expected_output=expected,
+            execution_time=result.get("time"),
+            memory=result.get("memory"),
+        )
+
+        db.add(res_obj)
+
         results.append({
             "testcase_id": tc.id,
             "input": tc.input if not tc.is_hidden else "Hidden",
@@ -37,28 +72,32 @@ def submit_code(data: SubmissionCreate, db: Session = Depends(get_db)):
             "error": error,
         })
 
-    status = "Accepted" if passed == total else "Wrong Answer"
+    submission.status = "Accepted" if passed == total else "Wrong Answer"
+    submission.total_passed = passed
 
-    submission = Submission(
-        user_id=data.user_id,
-        question_id=data.question_id,
-        code=data.code,
-        language=data.language,
-        status=status,
-        total_passed=passed,
-        total_cases=total,
-    )
+    # 🔥 update latest submission
+    latest = db.query(LatestSubmission).filter(
+        LatestSubmission.user_id == user_id,
+        LatestSubmission.question_id == data.question_id
+    ).first()
 
-    db.add(submission)
+    if latest:
+        latest.submission_id = submission.id
+    else:
+        db.add(LatestSubmission(
+            user_id=user_id,
+            question_id=data.question_id,
+            submission_id=submission.id
+        ))
+
     db.commit()
-    db.refresh(submission)
 
     return {
         "submission": submission,
         "results": results,
     }
 
-
+    
 @router.get("/questions/{question_id}/submissions")
 def list_question_submissions(question_id: int, db: Session = Depends(get_db)):
     return (

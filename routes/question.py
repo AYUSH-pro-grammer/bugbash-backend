@@ -36,12 +36,13 @@ def update_question(question_id: int, payload: QuestionCreate, db: Session = Dep
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
 
-    for key, value in payload.dict().items():
+    for key, value in payload.dict(exclude_unset=True).items():
         setattr(question, key, value)
 
     db.commit()
     db.refresh(question)
     return question
+
 
 
 @router.delete("/{question_id}")
