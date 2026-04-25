@@ -1,0 +1,23 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+import os
+
+
+SQLALCHEMY_DATABASE_URL = "postgresql://avnadmin:AVNS_qDNWH3GpsnK69lyAGWJ@pg-40f0ce4-hackerpro1428-fe94.c.aivencloud.com:16550/defaultdb?sslmode=require"
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=300
+)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
