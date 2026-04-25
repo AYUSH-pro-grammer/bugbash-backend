@@ -87,6 +87,8 @@ class Assignment(Base):
 
     id = Column(Integer, primary_key=True)
 
+    user_id = Column(Integer, ForeignKey("users.id"))  # 🔥 ADD THIS
+
     title = Column(String)
     syllabus = Column(Text)
 
@@ -94,7 +96,7 @@ class Assignment(Base):
     end_time = Column(DateTime)
 
     created_at = Column(DateTime, default=datetime.utcnow)
-
+    
 
 class AssignmentQuestion(Base):
     __tablename__ = "assignment_questions"
