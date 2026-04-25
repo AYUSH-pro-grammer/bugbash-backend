@@ -27,7 +27,6 @@ class QuestionOut(QuestionCreate):
 
 
 class TestCaseCreate(BaseModel):
-    question_id: int
     input: str
     expected_output: str
     is_hidden: Optional[bool] = True
@@ -85,4 +84,3 @@ class AssignmentQuestionCreate(BaseModel):
     position: int
     marks: int
 
-    
