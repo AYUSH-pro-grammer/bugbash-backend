@@ -74,7 +74,7 @@ def generate_and_store_content(ai_response: str, db: Session ,user_id: int):
         db.rollback()
         raise e
 
-router = APIRouter()
+router = APIRouter(prefix="/ai", tags=["ai"])
 
 
 @router.post("/create/assignment")
