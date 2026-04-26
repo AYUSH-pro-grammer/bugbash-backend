@@ -21,6 +21,10 @@ dependencies = [
   # Validation
   "email-validator>=2.0.0",
 
-  # HTTP client (you needed this)
+  # HTTP client
   "requests>=2.33.0",
+
+  # AI (new)
+  "google-genai>=1.73.1"
 ]
+
