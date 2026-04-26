@@ -9,8 +9,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from database import get_db
 from service.aiask import ask
 
+from deps.auth import get_current_user
 
-def generate_and_store_content(ai_response: str, db: Session):
+
+def generate_and_store_content(ai_response: str, db: Session ,user_id: int):
     try:
         data = json.loads(ai_response)
     except json.JSONDecodeError:
@@ -44,6 +46,7 @@ def generate_and_store_content(ai_response: str, db: Session):
         assignment_data = data["assignment"]
 
         assignment = Assignment(
+            user_id=user_id, 
             title=assignment_data["title"],
             syllabus=assignment_data["description"]  # ✅ match your schema
         )
@@ -75,13 +78,15 @@ router = APIRouter()
 
 
 @router.post("/create/assignment")
-def create_assignment(prompt: str, db: Session = Depends(get_db)):
+def create_assignment(prompt: str,
+            user_id: int = Depends(get_current_user), 
+            db: Session = Depends(get_db)):
     try:
         # 1. Call AI
         ai_response = ask(prompt)
 
         # 2. Store in DB
-        result = generate_and_store_content(ai_response, db)
+        result = generate_and_store_content(ai_response, db, user_id)
 
         return {
             "status": "success",

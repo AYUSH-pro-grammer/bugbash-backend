@@ -15,6 +15,8 @@ def create_assignment(
     user_id: int = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    
+
     assignment = Assignment(
         user_id=user_id,
         title=data.title,
@@ -22,6 +24,8 @@ def create_assignment(
         start_time=data.start_time,
         end_time=data.end_time
     )
+
+
 
     db.add(assignment)
     db.commit()
