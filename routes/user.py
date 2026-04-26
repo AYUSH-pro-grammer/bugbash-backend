@@ -120,3 +120,69 @@ def delete_user(
     db.commit()
 
     return {"message": "User deleted successfully"}
+
+
+
+
+
+
+
+
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+
+GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+
+@router.post("/google-login")
+def google_login(payload: dict, db: Session = Depends(get_db)):
+    try:
+        token = payload.get("token")
+
+        if not token:
+            raise HTTPException(status_code=400, detail="Token missing")
+
+        # ✅ Verify token with Google
+        idinfo = id_token.verify_oauth2_token(
+            token,
+            google_requests.Request(),
+            GOOGLE_CLIENT_ID
+        )
+
+        email = idinfo.get("email")
+        name = idinfo.get("name", "")
+        picture = idinfo.get("picture")
+
+        if not email:
+            raise HTTPException(status_code=400, detail="Invalid Google token")
+
+        # ✅ Check if user exists
+        user = db.query(User).filter(User.email == email).first()
+
+        if not user:
+            # 🔥 create user automatically
+            username = email.split("@")[0]
+
+            user = User(
+                username=username,
+                email=email,
+                firstname=name.split(" ")[0] if name else "",
+                lastname=" ".join(name.split(" ")[1:]) if name else "",
+                hashed_password="",  # no password for google users
+                profile_image=picture
+            )
+
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+
+        # ✅ Create your JWT
+        token = create_access_token({"sub": str(user.id)})
+
+        return {
+            "access_token": token,
+            "token_type": "bearer"
+        }
+
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google token")
+    
