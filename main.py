@@ -27,6 +27,12 @@ origins = [
     "http://localhost:3000",  # Next.js dev
     "http://127.0.0.1:3000",
 
+    "https://bugbash-frontend.vercel.app",
+
+"https://bugbash-frontend-git-main-ayus-projects-c0bbf04d.vercel.app/",
+
+
+
     "http://localhost:3001",  # Next.js dev
     "http://127.0.0.1:3001",
 ]
