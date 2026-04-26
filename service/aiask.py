@@ -41,7 +41,7 @@ Rules:
 def ask(topic: str):
     try:
         # ✅ configure once per call (safe for serverless)
-        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+        genai.configure(api_key=os.getenv("AIzaSyBWz0c0jWKM2DdtOtgcZw1cio2mty6lsYA"))
 
         model = genai.GenerativeModel("gemini-1.5-flash")
 
