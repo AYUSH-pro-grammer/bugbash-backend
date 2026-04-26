@@ -3,11 +3,12 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 import os
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql://avnadmin:AVNS_qDNWH3GpsnK69lyAGWJ@pg-40f0ce4-hackerpro1428-fe94.c.aivencloud.com:16550/defaultdb?sslmode=require"
+SQLALCHEMY_DATABASE_URL = "postgresql://avnadmin:AVNS_J6JOHXHbT2cFtb2vY7A@pg-2a5cbd6-my-7dc7.c.aivencloud.com:26166/defaultdb?sslmode=require"
+
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    pool_size=5,
-    max_overflow=2,
+    pool_size=5,          # max persistent connections
+    max_overflow=10,      # extra temporary connections
     pool_timeout=30,
     pool_recycle=1800,
 )
