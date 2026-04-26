@@ -12,6 +12,7 @@ from routes.user import router as user_router
 from routes.question import router as questions_router
 from routes.testcase import router as testcases_router
 from routes.submissions import router as submissions_router
+from routes.meet import router as ai_router
 from routes.playground import router as playground_router
 
 
