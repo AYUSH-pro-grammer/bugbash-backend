@@ -1,3 +1,5 @@
+url = 'AIzaSyBWz0c0jWKM2DdtOtgcZw1cio2mty6lsYA'
+
 import os
 import google.generativeai as genai
 
@@ -40,10 +42,11 @@ Rules:
 
 def ask(topic: str):
     try:
-        # ✅ configure once per call (safe for serverless)
-        genai.configure(api_key=os.getenv("AIzaSyBWz0c0jWKM2DdtOtgcZw1cio2mty6lsYA"))
+        # ✅ safer API key usage
+        genai.configure(api_key=url)
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        # ✅ correct model initialization
+        model = genai.GenerativeModel("gemini-3-flash-preview")
 
         response = model.generate_content(
             f"{preprompt}\nTopic: {topic}"
@@ -51,7 +54,7 @@ def ask(topic: str):
 
         text = response.text.strip()
 
-        # 🔥 clean possible markdown wrapping
+        # ✅ clean markdown if present
         if text.startswith("```"):
             text = text.split("```")[1]
 
