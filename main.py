@@ -22,29 +22,15 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# ✅ CORS CONFIG
-origins = [
-    "http://localhost:3000",  # Next.js dev
-    "http://127.0.0.1:3000",
-
-    "https://bugbash-frontend.vercel.app",
-
-"https://bugbash-frontend-git-main-ayus-projects-c0bbf04d.vercel.app/",
-
-
-
-    "http://localhost:3001",  # Next.js dev
-    "http://127.0.0.1:3001",
-]
-
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,       # allowed frontend
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],         # GET, POST, etc.
-    allow_headers=["*"],         # allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 @app.get("/")
 def default_route():
