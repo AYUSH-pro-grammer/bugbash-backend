@@ -316,9 +316,6 @@ Great progress 🚀
 
 from groq import Groq
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 client = Groq(api_key="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")
 

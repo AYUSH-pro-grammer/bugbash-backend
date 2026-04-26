@@ -35,4 +35,5 @@ dependencies = [
   # Optional (if you really use them)
   "openai==2.32.0",
   "groq==1.2.0",
+  "python-dotenv==1.0.1"
 ]
