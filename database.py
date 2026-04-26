@@ -6,8 +6,8 @@ import os
 SQLALCHEMY_DATABASE_URL = "postgresql://avnadmin:AVNS_qDNWH3GpsnK69lyAGWJ@pg-40f0ce4-hackerpro1428-fe94.c.aivencloud.com:16550/defaultdb?sslmode=require"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    pool_size=5,           # small pool
-    max_overflow=2,        # limit burst
+    pool_size=5,
+    max_overflow=2,
     pool_timeout=30,
     pool_recycle=1800,
 )
