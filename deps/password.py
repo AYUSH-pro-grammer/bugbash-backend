@@ -3,21 +3,17 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+def _normalize_password(password: str) -> str:
+    # bcrypt limit = 72 bytes
+    # truncate safely BEFORE hashing
+    return password.encode("utf-8")[:72].decode("utf-8", "ignore")
+
+
 def hash_password(password: str) -> str:
-    password_bytes = password.encode("utf-8")
-
-    if len(password_bytes) > 72:
-        password_bytes = password_bytes[:72]   # 🔥 truncate safely
-
-    return pwd_context.hash(password_bytes)
+    safe_password = _normalize_password(password)
+    return pwd_context.hash(safe_password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    password_bytes = plain_password.encode("utf-8")
-
-    if len(password_bytes) > 72:
-        password_bytes = password_bytes[:72]
-
-    return pwd_context.verify(password_bytes, hashed_password)
-
-
+    safe_password = _normalize_password(plain_password)
+    return pwd_context.verify(safe_password, hashed_password)
