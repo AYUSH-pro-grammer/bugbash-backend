@@ -149,6 +149,9 @@ def remove_question_from_assignment(
     return {"message": "Question removed"}
 
 
+
+
+
 @router.delete("/{assignment_id}")
 def delete_assignment(
     assignment_id: int,
@@ -163,8 +166,12 @@ def delete_assignment(
     if assignment.user_id != user_id:
         raise HTTPException(status_code=403, detail="Not allowed")
 
+    # 🔥 DELETE CHILD FIRST
+    db.query(AssignmentQuestion).filter(
+        AssignmentQuestion.assignment_id == assignment_id
+    ).delete()
+
     db.delete(assignment)
     db.commit()
 
     return {"message": "Assignment deleted"}
-
